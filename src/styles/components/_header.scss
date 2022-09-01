@@ -5,6 +5,7 @@
     text-align: center;
     letter-spacing: 2px;
   }
+
   nav {
     position: absolute;
     top: 16px;
@@ -39,5 +40,11 @@
         }
       }
     }
+  }
+}
+.like-page {
+  h2 {
+    text-align: center;
+    font-size: 2rem;
   }
 }

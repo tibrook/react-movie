@@ -1,4 +1,5 @@
 import { faHourglass3 } from "@fortawesome/free-solid-svg-icons";
+import { getMouseEventOptions } from "@testing-library/user-event/dist/utils";
 import React from "react";
 
 const Card = ({ movie }) => {
@@ -7,6 +8,7 @@ const Card = ({ movie }) => {
     return [dd, mm, yy].join("/");
   };
 
+  /* Les genres sont retournés sous formes d'id */
   const genreFinder = () => {
     let genreArray = [];
     for (let i = 0; i < movie.genre_ids.length; i++) {
@@ -74,7 +76,21 @@ const Card = ({ movie }) => {
     }
     return genreArray.map((genre) => <li key={genre}>{genre}</li>);
   };
-
+  /* Ajout des coups de coeurs au loclStorage */
+  const addStorage = () => {
+    let storedData = window.localStorage.movies
+      ? window.localStorage.movies.split(",")
+      : [];
+    if (!storedData.includes(movie.id.toString())) {
+      storedData.push(movie.id);
+      window.localStorage.movies = storedData;
+    }
+  };
+  const deleteStorage = () => {
+    let storedData = window.localStorage.movies.split(",");
+    let newData = storedData.filter((id) => id != movie.id);
+    window.localStorage.movies = newData;
+  };
   return (
     <div className="card">
       <img
@@ -90,12 +106,30 @@ const Card = ({ movie }) => {
         <h5>Sorti le : {dateFormater(movie.release_date)}</h5>
       ) : null}
       <h4>
-        {movie.vote_average}/10 <span>⭐</span>
+        {movie.vote_average.toFixed(1)}/10 <span>⭐</span>
       </h4>
-      <ul>{movie.genre_ids ? genreFinder() : null}</ul>
+      <ul>
+        {movie.genre_ids
+          ? genreFinder()
+          : movie.genres.map((genre) => <li key={genre.id}>{genre.name}</li>)}
+      </ul>
       {movie.overview ? <h3>Synopsis</h3> : ""}
       <p>{movie.overview}</p>
-      <div className="btn">Ajouter aux coups de coeur</div>
+      {movie.genre_ids ? (
+        <div className="btn" onClick={() => addStorage()}>
+          Ajouter aux coups de coeur
+        </div>
+      ) : (
+        <div
+          className="btn"
+          onClick={() => {
+            deleteStorage();
+            window.location.reload();
+          }}
+        >
+          Supprimer de la liste
+        </div>
+      )}
     </div>
   );
 };
